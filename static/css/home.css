@@ -1,12 +1,9 @@
-/* HERO */
-
 .hero {
     min-height: 560px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-
     background:
         linear-gradient(
             rgba(10, 20, 30, .58),
@@ -14,62 +11,48 @@
         ),
         url("../images/hero.jpg") center/cover;
 }
-
 .hero-content {
     width: 90%;
     max-width: 1050px;
     color: white;
 }
-
 .hero-small {
     font-size: 14px;
     font-weight: 600;
 }
-
 .hero h1 {
     margin-top: 15px;
     font-size: 58px;
     line-height: 1.05;
 }
-
 .hero h1 span {
     color: #ff7a00;
 }
-
 .hero p {
     margin: 20px auto 35px;
     max-width: 650px;
     font-size: 18px;
     line-height: 1.6;
 }
-
-
-/* SEARCH */
-
 .search-box {
     background: white;
     padding: 10px;
     border-radius: 14px;
-
     display: grid;
     grid-template-columns: 1.3fr 1fr 1fr auto;
     gap: 8px;
-
     text-align: left;
     box-shadow: 0 15px 40px rgba(0,0,0,.2);
 }
-
 .search-field {
     padding: 10px 15px;
 }
-
 .search-field label {
     display: block;
     color: #777;
     font-size: 12px;
     margin-bottom: 6px;
 }
-
 .search-field input,
 .search-field select {
     width: 100%;
@@ -78,67 +61,49 @@
     font-size: 15px;
     background: transparent;
 }
-
 #searchButton {
     border: none;
     border-radius: 10px;
     padding: 0 25px;
-
     background: #e85d04;
     color: white;
-
     font-size: 15px;
     font-weight: 700;
-
     cursor: pointer;
 }
-
 #searchButton:hover {
     background: #c94d00;
 }
-
-
-/* SECTIONS */
-
 .quick-section,
 .explore {
     width: 88%;
     max-width: 1400px;
     margin: 70px auto 0;
 }
-
 .section-title {
     display: flex;
     align-items: end;
     justify-content: space-between;
     margin-bottom: 25px;
 }
-
 .section-title span {
     color: #e85d04;
     font-size: 13px;
     font-weight: 700;
 }
-
 .section-title h2 {
     margin-top: 6px;
     font-size: 30px;
 }
-
 .see-all {
     color: #e85d04;
     font-weight: 700;
 }
-
-
-/* QUICK FILTERS */
-
 .quick-filters {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
 }
-
 .quick-filters button {
     border: 1px solid #ddd;
     background: white;
@@ -147,121 +112,92 @@
     cursor: pointer;
     font-weight: 600;
 }
-
 .quick-filters button:hover {
     border-color: #e85d04;
     color: #e85d04;
 }
-
-
-/* PROPERTY + MAP */
-
 .explore-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
 }
-
 .property-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
 }
-
 .property-card {
     background: white;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0,0,0,.07);
 }
-
 .property-image {
     height: 210px;
     position: relative;
 }
-
 .property-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
 .favorite-btn {
     position: absolute;
     top: 12px;
     right: 12px;
-
     width: 38px;
     height: 38px;
-
     border: none;
     border-radius: 50%;
-
     background: white;
     font-size: 22px;
     cursor: pointer;
 }
-
 .favorite-btn.active {
     color: #e85d04;
 }
-
 .property-badge {
     position: absolute;
     bottom: 12px;
     left: 12px;
-
     padding: 6px 10px;
     border-radius: 6px;
-
     background: #e85d04;
     color: white;
-
     font-size: 11px;
     font-weight: 700;
 }
-
 .property-info {
     padding: 17px;
 }
-
 .property-price {
     color: #e85d04;
     font-size: 19px;
     font-weight: 800;
 }
-
 .property-price small {
     color: #777;
     font-size: 11px;
     font-weight: 400;
 }
-
 .property-info h3 {
     margin-top: 8px;
     font-size: 17px;
 }
-
 .property-location {
     color: #777;
     font-size: 13px;
     margin: 8px 0 15px;
 }
-
 .property-details {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
 }
-
 .property-details span {
     color: #555;
     font-size: 11px;
 }
-
-
-/* MAP */
-
 .map-container {
     position: relative;
     min-height: 500px;
@@ -269,128 +205,90 @@
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0,0,0,.08);
 }
-
 #map {
     width: 100%;
     height: 100%;
     min-height: 500px;
 }
-
 .map-label {
     position: absolute;
     top: 15px;
     left: 15px;
-
     z-index: 500;
-
     background: white;
     padding: 10px 15px;
     border-radius: 8px;
-
     font-weight: 700;
     font-size: 13px;
-
     box-shadow: 0 3px 10px rgba(0,0,0,.15);
 }
-
-
-/* OWNER */
-
 .owner-section {
     width: 88%;
     max-width: 1400px;
     margin: 80px auto 0;
-
     padding: 50px;
-
     border-radius: 20px;
-
     background: #17202a;
     color: white;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 30px;
 }
-
 .owner-section span {
     color: #ff7a00;
     font-weight: 700;
 }
-
 .owner-section h2 {
     max-width: 650px;
     margin-top: 10px;
     font-size: 30px;
 }
-
 .owner-section p {
     margin-top: 10px;
     color: #bfc5ca;
 }
-
 .owner-btn {
     white-space: nowrap;
-
     background: #e85d04;
     color: white;
-
     padding: 14px 22px;
     border-radius: 9px;
-
     font-weight: 700;
 }
-
-
-/* RESPONSIVE */
-
 @media (max-width: 1000px) {
-
     .hero h1 {
         font-size: 45px;
     }
-
     .search-box {
         grid-template-columns: 1fr 1fr;
     }
-
     #searchButton {
         height: 50px;
     }
-
     .explore-layout {
         grid-template-columns: 1fr;
     }
-
 }
-
 @media (max-width: 700px) {
-
     .hero {
         min-height: 650px;
     }
-
     .hero h1 {
         font-size: 38px;
     }
-
     .search-box {
         grid-template-columns: 1fr;
     }
-
     .property-list {
         grid-template-columns: 1fr;
     }
-
     .owner-section {
         flex-direction: column;
         align-items: flex-start;
         padding: 30px;
     }
-
     .owner-section h2 {
         font-size: 24px;
     }
-
 }

@@ -3,66 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Dar.nous — Location au Maroc</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
-
-    <!-- Leaflet Map -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     >
 </head>
-
 <body>
-
 <header class="navbar">
-
     <div class="logo">
         <span>Dar</span><strong>.nous</strong>
     </div>
-
     <nav>
         <a href="/">Accueil</a>
         <a href="/search">Rechercher</a>
         <a href="/favorites">Favoris</a>
         <a href="/chat">Messages</a>
     </nav>
-
     <div class="nav-account">
         <a href="/login" class="login-btn">Se connecter</a>
         <a href="/register" class="register-btn">Créer un compte</a>
     </div>
-
 </header>
-
-
 <main>
-
-    <!-- HERO -->
-
     <section class="hero">
-
         <div class="hero-content">
-
             <span class="hero-small">
                 🏠 Trouvez votre prochain chez-vous
             </span>
-
             <h1>
                 Louez votre logement
                 <span>au Maroc</span>
             </h1>
-
             <p>
                 Appartements, maisons, villas, studios et commerces
                 disponibles partout au Maroc.
             </p>
-
             <div class="search-box">
-
                 <div class="search-field">
                     <label>📍 Où ?</label>
                     <input
@@ -71,10 +50,8 @@
                         placeholder="Ville ou quartier"
                     >
                 </div>
-
                 <div class="search-field">
                     <label>🏠 Type</label>
-
                     <select id="typeInput">
                         <option value="">Tous les types</option>
                         <option value="Appartement">Appartement</option>
@@ -84,258 +61,161 @@
                         <option value="Commerce">Commerce</option>
                     </select>
                 </div>
-
                 <div class="search-field">
                     <label>💰 Budget max</label>
-
                     <input
                         type="number"
                         id="priceInput"
                         placeholder="DH"
                     >
                 </div>
-
                 <button id="searchButton">
                     Rechercher
                 </button>
-
             </div>
-
         </div>
-
     </section>
-
-
-    <!-- QUICK FILTERS -->
-
     <section class="quick-section">
-
         <div class="section-title">
-
             <div>
                 <span>Recherche rapide</span>
                 <h2>Que recherchez-vous ?</h2>
             </div>
-
         </div>
-
         <div class="quick-filters">
-
             <button data-type="Appartement">
                 🏢 Appartement
             </button>
-
             <button data-type="Maison">
                 🏠 Maison
             </button>
-
             <button data-type="Villa">
                 🏡 Villa
             </button>
-
             <button data-type="Studio">
                 🛏️ Studio
             </button>
-
             <button data-type="Commerce">
                 🏪 Commerce
             </button>
-
         </div>
-
     </section>
-
-
-    <!-- PROPERTY + MAP -->
-
     <section class="explore">
-
         <div class="section-title">
-
             <div>
                 <span>Découvrez les annonces</span>
                 <h2>Logements disponibles</h2>
             </div>
-
             <a href="/search" class="see-all">
                 Voir tout →
             </a>
-
         </div>
-
-
         <div class="explore-layout">
-
-            <!-- PROPERTY LIST -->
-
             <div class="property-list">
-
                 <article
                     class="property-card"
                     data-city="Agadir"
                     data-type="Appartement"
                     data-price="3500"
                 >
-
                     <div class="property-image">
-
                         <img
                             src="{{ url_for('static', filename='images/hoese.jpg') }}"
                             alt="Appartement à Agadir"
                         >
-
                         <button class="favorite-btn">
                             ♡
                         </button>
-
                         <span class="property-badge">
                             À louer
                         </span>
-
                     </div>
-
                     <div class="property-info">
-
                         <div class="property-price">
                             3 500 DH <small>/ mois</small>
                         </div>
-
                         <h3>
                             Appartement moderne
                         </h3>
-
                         <p class="property-location">
                             📍 Hay Mohammadi, Agadir
                         </p>
-
                         <div class="property-details">
-
                             <span>🛏️ 2 chambres</span>
                             <span>🚿 1 SDB</span>
                             <span>📐 85 m²</span>
-
                         </div>
-
                     </div>
-
                 </article>
-
-
                 <article
                     class="property-card"
                     data-city="Marrakech"
                     data-type="Villa"
                     data-price="8500"
                 >
-
                     <div class="property-image">
-
                         <img
                             src="{{ url_for('static', filename='images/house2.jpg') }}"
                             alt="Villa à Marrakech"
                         >
-
                         <button class="favorite-btn">
                             ♡
                         </button>
-
                         <span class="property-badge">
                             Nouveau
                         </span>
-
                     </div>
-
                     <div class="property-info">
-
                         <div class="property-price">
                             8 500 DH <small>/ mois</small>
                         </div>
-
                         <h3>
                             Belle villa avec jardin
                         </h3>
-
                         <p class="property-location">
                             📍 Targa, Marrakech
                         </p>
-
                         <div class="property-details">
-
                             <span>🛏️ 4 chambres</span>
                             <span>🚿 3 SDB</span>
                             <span>📐 220 m²</span>
-
                         </div>
-
                     </div>
-
                 </article>
-
             </div>
-
-
-            <!-- MAP -->
-
             <div class="map-container">
-
                 <div id="map"></div>
-
                 <div class="map-label">
                     🗺️ Explorer sur la carte
                 </div>
-
             </div>
-
         </div>
-
     </section>
-
-
-    <!-- CTA -->
-
     <section class="owner-section">
-
         <div>
-
             <span>Vous êtes propriétaire ?</span>
-
             <h2>
                 Publiez votre logement
                 et trouvez rapidement un locataire.
             </h2>
-
             <p>
                 Ajoutez vos photos, votre prix et votre localisation.
             </p>
-
         </div>
-
         <a href="/add_property" class="owner-btn">
             + Déposer une annonce
         </a>
-
     </section>
-
 </main>
-
-
 <footer>
-
     <div class="logo">
         <span>Dar</span><strong>.nous</strong>
     </div>
-
     <p>
         © 2026 Dar.nous — La location immobilière au Maroc
     </p>
-
 </footer>
-
-
-<!-- Leaflet -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
 </body>
 </html>

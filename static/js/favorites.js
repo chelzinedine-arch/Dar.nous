@@ -8,7 +8,7 @@ function toggleFavorite(propertyId, btnElement) {
     })
     .then(response => {
         if (response.status === 401) {
-            window.location.href = '/signin'; // إلا ما كانش مسجل يديه لـ Sign In
+            window.location.href = '/signin';
             return;
         }
         return response.json();
@@ -16,10 +16,10 @@ function toggleFavorite(propertyId, btnElement) {
     .then(data => {
         if (data && data.status === 'added') {
             btnElement.classList.add('active');
-            alert('تزادت للمفضلة! ❤️');
+            alert('Add it to favorites!!');
         } else if (data && data.status === 'removed') {
             btnElement.classList.remove('active');
-            alert('تمسحات من المفضلة!');
+            alert('Delete from favorites!!');
         }
     })
     .catch(error => console.error('Error:', error));
