@@ -150,20 +150,9 @@ def db_test():
             "error": str(e)
         }), 500
 if __name__ == "__main__":
-    try:
-        init_db()
-        print("===================================")
-        print("Dar.nous Database: CONNECTED")
-        print("Users table: READY")
-        print("Properties table: READY")
-        print("===================================")
-    except Exception as e:
-        print("===================================")
-        print("DATABASE ERROR")
-        print(e)
-        print("===================================")
+    port = int(os.environ.get("PORT", 5000))
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True
+        host="0.0.0.0",
+        port=port,
+        debug=False
     )
