@@ -8,74 +8,110 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Ajouter une annonce - Dar.nous</title>
+    <title>Déposer une annonce - Dar.nous</title>
 
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/auth.css') }}">
+          href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
 
 <body>
 
-<div class="profile-page">
+<div class="add-property-page">
 
-    <div class="profile-container">
+    <div class="add-property-container">
 
-        <a href="{{ url_for('dashboard') }}"
-           class="profile-back">
+
+        <!-- BACK -->
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="add-property-back"
+        >
             ← Retour au dashboard
         </a>
 
 
-        <div class="profile-box">
+        <!-- MAIN CARD -->
 
-            <h2>
-                Déposer une annonce
-            </h2>
+        <div class="add-property-card">
 
-            <p class="profile-description">
-                Ajoutez votre logement sur Dar.nous.
-            </p>
 
+            <!-- HEADER -->
+
+            <div class="add-property-header">
+
+                <div>
+
+                    <span class="form-eyebrow">
+                        DAR.NOUS
+                    </span>
+
+                    <h1>
+                        Déposer une annonce
+                    </h1>
+
+                    <p>
+                        Présentez votre logement aux personnes
+                        qui cherchent à louer au Maroc.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE -->
 
             {% if message %}
 
-                <div class="profile-message">
+                <div class="add-property-message">
                     {{ message }}
                 </div>
 
             {% endif %}
 
 
+            <!-- FORM -->
+
             <form
-                class="profile-form"
+                class="property-form"
                 method="POST"
                 action="{{ url_for('add_property') }}"
             >
 
 
-                <div class="profile-field full">
+                <!-- ====================================
+                     TITLE
+                ===================================== -->
+
+                <div class="property-form-group full">
 
                     <label for="title">
-                        Titre *
+                        Titre de l'annonce *
                     </label>
 
                     <input
                         type="text"
                         id="title"
                         name="title"
-                        placeholder="Ex: Bel appartement à Agadir"
+                        placeholder="Ex : Bel appartement moderne à Agadir"
+                        maxlength="255"
                         required
                     >
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     TYPE
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="property_type">
-                        Type *
+                        Type de logement *
                     </label>
 
                     <select
@@ -85,7 +121,7 @@
                     >
 
                         <option value="">
-                            Choisir
+                            Sélectionner un type
                         </option>
 
                         <option value="Appartement">
@@ -125,26 +161,42 @@
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     PRICE
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="price">
-                        Prix / mois (DH) *
+                        Prix mensuel (DH) *
                     </label>
 
-                    <input
-                        type="number"
-                        id="price"
-                        name="price"
-                        min="0"
-                        step="0.01"
-                        placeholder="3500"
-                        required
-                    >
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            min="0"
+                            step="0.01"
+                            placeholder="3500"
+                            required
+                        >
+
+                        <span>
+                            DH / mois
+                        </span>
+
+                    </div>
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     CITY
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="city">
                         Ville *
@@ -155,13 +207,18 @@
                         id="city"
                         name="city"
                         placeholder="Agadir"
+                        maxlength="100"
                         required
                     >
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     DISTRICT
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="district">
                         Quartier
@@ -172,12 +229,17 @@
                         id="district"
                         name="district"
                         placeholder="Hay Mohammadi"
+                        maxlength="150"
                     >
 
                 </div>
 
 
-                <div class="profile-field full">
+                <!-- ====================================
+                     ADDRESS
+                ===================================== -->
+
+                <div class="property-form-group full">
 
                     <label for="address">
                         Adresse
@@ -187,13 +249,17 @@
                         type="text"
                         id="address"
                         name="address"
-                        placeholder="Adresse du logement"
+                        placeholder="Ex : Rue Hassan II, Agadir"
                     >
 
                 </div>
 
 
-                <div class="profile-field full">
+                <!-- ====================================
+                     DESCRIPTION
+                ===================================== -->
+
+                <div class="property-form-group full">
 
                     <label for="description">
                         Description
@@ -202,35 +268,57 @@
                     <textarea
                         id="description"
                         name="description"
-                        rows="6"
-                        placeholder="Décrivez votre logement..."
+                        rows="7"
+                        maxlength="3000"
+                        placeholder="Décrivez votre logement : emplacement, état, voisinage, équipements, conditions de location..."
                     ></textarea>
 
+                    <small class="field-help">
+                        Une bonne description aide les locataires
+                        à mieux comprendre votre annonce.
+                    </small>
+
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     SURFACE
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="surface">
-                        Surface (m²)
+                        Surface
                     </label>
 
-                    <input
-                        type="number"
-                        id="surface"
-                        name="surface"
-                        min="1"
-                        step="0.01"
-                        placeholder="85"
-                    >
+                    <div class="input-with-unit">
+
+                        <input
+                            type="number"
+                            id="surface"
+                            name="surface"
+                            min="1"
+                            step="0.01"
+                            placeholder="85"
+                        >
+
+                        <span>
+                            m²
+                        </span>
+
+                    </div>
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     BEDROOMS
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="bedrooms">
-                        Chambres
+                        Nombre de chambres
                     </label>
 
                     <input
@@ -238,16 +326,21 @@
                         id="bedrooms"
                         name="bedrooms"
                         min="0"
+                        max="50"
                         value="0"
                     >
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     BATHROOMS
+                ===================================== -->
+
+                <div class="property-form-group">
 
                     <label for="bathrooms">
-                        Salles de bain
+                        Nombre de salles de bain
                     </label>
 
                     <input
@@ -255,55 +348,105 @@
                         id="bathrooms"
                         name="bathrooms"
                         min="0"
+                        max="50"
                         value="0"
                     >
 
                 </div>
 
 
-                <div class="profile-field full">
+                <!-- ====================================
+                     EQUIPMENT
+                ===================================== -->
 
-                    <label>
-                        Équipements
-                    </label>
+                <div class="property-equipment">
 
-                    <div style="
-                        display:flex;
-                        gap:18px;
-                        flex-wrap:wrap;
-                        margin-top:10px;
-                    ">
+                    <div class="property-section-title">
 
-                        <label>
+                        <div class="section-icon">
+                            ⚙
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Équipements
+                            </h3>
+
+                            <p>
+                                Sélectionnez les équipements
+                                disponibles.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="property-equipment-list">
+
+
+                        <label class="property-check">
+
                             <input
                                 type="checkbox"
                                 name="furnished"
                             >
-                            Meublé
+
+                            <span class="check-box"></span>
+
+                            <span class="check-text">
+                                🛋️ Meublé
+                            </span>
+
                         </label>
 
-                        <label>
+
+                        <label class="property-check">
+
                             <input
                                 type="checkbox"
                                 name="parking"
                             >
-                            Parking
+
+                            <span class="check-box"></span>
+
+                            <span class="check-text">
+                                🚗 Parking
+                            </span>
+
                         </label>
 
-                        <label>
+
+                        <label class="property-check">
+
                             <input
                                 type="checkbox"
                                 name="elevator"
                             >
-                            Ascenseur
+
+                            <span class="check-box"></span>
+
+                            <span class="check-text">
+                                🛗 Ascenseur
+                            </span>
+
                         </label>
 
-                        <label>
+
+                        <label class="property-check">
+
                             <input
                                 type="checkbox"
                                 name="air_conditioning"
                             >
-                            Climatisation
+
+                            <span class="check-box"></span>
+
+                            <span class="check-text">
+                                ❄️ Climatisation
+                            </span>
+
                         </label>
 
                     </div>
@@ -311,46 +454,113 @@
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     LOCATION
+                ===================================== -->
 
-                    <label for="latitude">
-                        Latitude
-                    </label>
+                <div class="property-location-box">
 
-                    <input
-                        type="number"
-                        id="latitude"
-                        name="latitude"
-                        step="0.0000001"
-                        placeholder="30.4278"
-                    >
+                    <div class="property-section-title">
+
+                        <div class="section-icon">
+                            📍
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Localisation
+                            </h3>
+
+                            <p>
+                                Ces coordonnées serviront
+                                à afficher votre annonce sur la carte.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="property-location-grid">
+
+
+                        <div class="property-form-group">
+
+                            <label for="latitude">
+                                Latitude
+                            </label>
+
+                            <input
+                                type="number"
+                                id="latitude"
+                                name="latitude"
+                                step="0.0000001"
+                                placeholder="30.4278"
+                            >
+
+                        </div>
+
+
+                        <div class="property-form-group">
+
+                            <label for="longitude">
+                                Longitude
+                            </label>
+
+                            <input
+                                type="number"
+                                id="longitude"
+                                name="longitude"
+                                step="0.0000001"
+                                placeholder="-9.5981"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="location-info">
+
+                        💡 Exemple pour Agadir :
+                        <strong>
+                            30.4278
+                        </strong>
+                        ,
+                        <strong>
+                            -9.5981
+                        </strong>
+
+                    </div>
 
                 </div>
 
 
-                <div class="profile-field">
+                <!-- ====================================
+                     BUTTONS
+                ===================================== -->
 
-                    <label for="longitude">
-                        Longitude
-                    </label>
+                <div class="form-actions">
 
-                    <input
-                        type="number"
-                        id="longitude"
-                        name="longitude"
-                        step="0.0000001"
-                        placeholder="-9.5981"
+                    <a
+                        href="{{ url_for('dashboard') }}"
+                        class="cancel-button"
                     >
+                        Annuler
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="property-submit"
+                    >
+                        Publier l'annonce
+                    </button>
 
                 </div>
 
-
-                <button
-                    type="submit"
-                    class="save-profile"
-                >
-                    Publier l'annonce
-                </button>
 
             </form>
 
