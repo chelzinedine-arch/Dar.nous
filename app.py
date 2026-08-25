@@ -620,6 +620,158 @@ def db_test():
             "error": str(e)
         }), 500
 
+# ============================================
+# PROFILE
+# ============================================
+
+@app.route("/profile")
+def profile():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = None
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+                id,
+                username,
+                email,
+                first_name,
+                last_name,
+                phone,
+                profile_image,
+                is_verified,
+                created_at
+            FROM users
+            WHERE id = %s
+        """, (
+            session["user_id"],
+        ))
+
+        user = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if not user:
+            session.clear()
+            return redirect(url_for("login"))
+
+        return render_template(
+            "profile.html",
+            user=user,
+            message=""
+        )
+
+    except Exception as e:
+
+        if conn:
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user=None,
+            message=f"Erreur: {e}"
+        )
+
+
+# ============================================
+# UPDATE PROFILE
+# ============================================
+
+@app.route("/profile/update", methods=["POST"])
+def update_profile():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    first_name = request.form.get(
+        "first_name", ""
+    ).strip()
+
+    last_name = request.form.get(
+        "last_name", ""
+    ).strip()
+
+    email = request.form.get(
+        "email", ""
+    ).strip().lower()
+
+    phone = request.form.get(
+        "phone", ""
+    ).strip()
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            UPDATE users
+            SET
+                first_name = %s,
+                last_name = %s,
+                email = %s,
+                phone = %s,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (
+            first_name or None,
+            last_name or None,
+            email,
+            phone or None,
+            session["user_id"]
+        ))
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return redirect(url_for("profile"))
+
+    except psycopg2.errors.UniqueViolation:
+
+        if conn:
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user={
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "phone": phone,
+                "username": session.get("username")
+            },
+            message="Cet email est déjà utilisé."
+        )
+
+    except Exception as e:
+
+        if conn:
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user={
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "phone": phone,
+                "username": session.get("username")
+            },
+            message=f"Erreur: {e}"
+        )
 
 # ============================================
 # START SERVER

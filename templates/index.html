@@ -23,8 +23,25 @@
         <a href="/chat">Messages</a>
     </nav>
     <div class="nav-account">
-        <a href="/login" class="login-btn">Se connecter</a>
-        <a href="/register" class="register-btn">Créer un compte</a>
+        {% if session.get("user_id") %}
+        <a href="{{ url_for('profile') }}"
+           class="login-btn">
+            👤 {{ session.get("username") }}
+        </a>
+        <a href="{{ url_for('logout') }}"
+           class="register-btn">
+            Déconnexion
+        </a>
+       {% else %}
+        <a href="{{ url_for('login') }}"
+           class="login-btn">
+            Se connecter
+        </a>
+        <a href="{{ url_for('register') }}"
+           class="register-btn">
+            Créer un compte
+        </a>
+        {% endif %}
     </div>
 </header>
 <main>

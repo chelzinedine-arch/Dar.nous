@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mon profil - Dar.nous</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/auth.css') }}">
+
+    <style>
+        .profile-page {
+            min-height: 100vh;
+            padding: 50px 20px;
+            background: #f5f7fa;
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .profile-top {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.07);
+            margin-bottom: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .profile-user {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #e85d04;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .profile-user h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .profile-user p {
+            margin: 0;
+            color: #777;
+        }
+
+        .verified {
+            display: inline-block;
+            margin-top: 8px;
+            color: #198754;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .logout-button {
+            padding: 11px 18px;
+            background: #17202a;
+            color: white;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        .profile-box {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.07);
+        }
+
+        .profile-box h2 {
+            margin-bottom: 8px;
+            font-size: 23px;
+        }
+
+        .profile-description {
+            color: #777;
+            margin-bottom: 28px;
+        }
+
+        .profile-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-field.full {
+            grid-column: 1 / -1;
+        }
+
+        .profile-field label {
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .profile-field input {
+            width: 100%;
+            padding: 13px 14px;
+
+            border: 1px solid #d9dee5;
+            border-radius: 9px;
+
+            outline: none;
+            font-size: 14px;
+        }
+
+        .profile-field input:focus {
+            border-color: #e85d04;
+            box-shadow: 0 0 0 3px rgba(232,93,4,.10);
+        }
+
+        .profile-field input:disabled {
+            background: #f1f3f5;
+            color: #777;
+            cursor: not-allowed;
+        }
+
+        .save-profile {
+            grid-column: 1 / -1;
+
+            border: none;
+            background: #e85d04;
+            color: white;
+
+            padding: 14px;
+            border-radius: 9px;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .save-profile:hover {
+            background: #c94d00;
+        }
+
+        .profile-message {
+            margin-bottom: 20px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #fff1f0;
+            color: #c0392b;
+            font-size: 13px;
+        }
+
+        .profile-back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #e85d04;
+            font-weight: 700;
+        }
+
+        @media (max-width: 650px) {
+
+            .profile-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-form {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-field.full {
+                grid-column: auto;
+            }
+
+            .save-profile {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="profile-page">
+
+    <div class="profile-container">
+
+        <a href="/" class="profile-back">
+            ← Retour à l'accueil
+        </a>
+
+
+        <div class="profile-top">
+
+            <div class="profile-user">
+
+                <div class="profile-avatar">
+
+                    {% if user.first_name %}
+                        {{ user.first_name[0]|upper }}
+                    {% else %}
+                        {{ user.username[0]|upper }}
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    <h1>
+                        {% if user.first_name %}
+                            {{ user.first_name }}
+                            {{ user.last_name or "" }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </h1>
+
+                    <p>
+                        @{{ user.username }}
+                    </p>
+
+                    {% if user.is_verified %}
+                        <div class="verified">
+                            ✓ Compte vérifié
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <a href="{{ url_for('logout') }}"
+               class="logout-button">
+                Déconnexion
+            </a>
+
+        </div>
+
+
+        <div class="profile-box">
+
+            <h2>Mon profil</h2>
+
+            <p class="profile-description">
+                Gérez vos informations personnelles.
+            </p>
+
+
+            {% if message %}
+                <div class="profile-message">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+
+            <form
+                class="profile-form"
+                method="POST"
+                action="{{ url_for('update_profile') }}"
+            >
+
+                <div class="profile-field">
+
+                    <label for="first_name">
+                        Prénom
+                    </label>
+
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        value="{{ user.first_name or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="profile-field">
+
+                    <label for="last_name">
+                        Nom
+                    </label>
+
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        value="{{ user.last_name or '' }}"
+                    >
+
+                </div>
+
+
+                <div class="profile-field">
+
+                    <label for="username">
+                        Nom d'utilisateur
+                    </label>
+
+                    <input
+                        type="text"
+                        value="{{ user.username }}"
+                        disabled
+                    >
+
+                </div>
+
+
+                <div class="profile-field">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="{{ user.email or '' }}"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="profile-field full">
+
+                    <label for="phone">
+                        Téléphone
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value="{{ user.phone or '' }}"
+                        placeholder="06XXXXXXXX"
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="save-profile"
+                >
+                    Enregistrer les modifications
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
