@@ -52,7 +52,275 @@ def get_db():
         cursor_factory=RealDictCursor
     )
 
+# ============================================
+# DASHBOARD
+# ============================================
 
+@app.route("/dashboard")
+def dashboard():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = None
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+                id,
+                title,
+                property_type,
+                price,
+                city,
+                district,
+                surface,
+                bedrooms,
+                bathrooms,
+                status,
+                created_at
+            FROM properties
+            WHERE owner_id = %s
+            ORDER BY created_at DESC
+        """, (
+            session["user_id"],
+        ))
+
+        properties = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return render_template(
+            "dashboard.html",
+            properties=properties
+        )
+
+    except Exception as e:
+
+        if conn:
+            conn.close()
+
+        return render_template(
+            "dashboard.html",
+            properties=[],
+            message=f"Erreur: {e}"
+        )
+
+
+# ============================================
+# ADD PROPERTY
+# ============================================
+
+@app.route("/add_property", methods=["GET", "POST"])
+def add_property():
+
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "GET":
+
+        return render_template(
+            "add_property.html",
+            message=""
+        )
+
+
+    title = request.form.get(
+        "title", ""
+    ).strip()
+
+    description = request.form.get(
+        "description", ""
+    ).strip()
+
+    property_type = request.form.get(
+        "property_type", ""
+    ).strip()
+
+    city = request.form.get(
+        "city", ""
+    ).strip()
+
+    district = request.form.get(
+        "district", ""
+    ).strip()
+
+    address = request.form.get(
+        "address", ""
+    ).strip()
+
+    price = request.form.get(
+        "price", ""
+    ).strip()
+
+    surface = request.form.get(
+        "surface", ""
+    ).strip()
+
+    bedrooms = request.form.get(
+        "bedrooms", "0"
+    ).strip()
+
+    bathrooms = request.form.get(
+        "bathrooms", "0"
+    ).strip()
+
+    latitude = request.form.get(
+        "latitude", ""
+    ).strip()
+
+    longitude = request.form.get(
+        "longitude", ""
+    ).strip()
+
+    furnished = request.form.get(
+        "furnished"
+    ) == "on"
+
+    parking = request.form.get(
+        "parking"
+    ) == "on"
+
+    elevator = request.form.get(
+        "elevator"
+    ) == "on"
+
+    air_conditioning = request.form.get(
+        "air_conditioning"
+    ) == "on"
+
+
+    # ----------------------------------------
+    # VALIDATION
+    # ----------------------------------------
+
+    if not title or not property_type or not city or not price:
+
+        return render_template(
+            "add_property.html",
+            message="Remplissez les champs obligatoires."
+        )
+
+
+    try:
+
+        price_value = float(price)
+
+        surface_value = (
+            float(surface)
+            if surface
+            else None
+        )
+
+        bedrooms_value = int(
+            bedrooms or 0
+        )
+
+        bathrooms_value = int(
+            bathrooms or 0
+        )
+
+        latitude_value = (
+            float(latitude)
+            if latitude
+            else None
+        )
+
+        longitude_value = (
+            float(longitude)
+            if longitude
+            else None
+        )
+
+    except ValueError:
+
+        return render_template(
+            "add_property.html",
+            message="Vérifiez les valeurs numériques."
+        )
+
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO properties (
+                owner_id,
+                title,
+                description,
+                property_type,
+                price,
+                city,
+                district,
+                address,
+                latitude,
+                longitude,
+                surface,
+                bedrooms,
+                bathrooms,
+                furnished,
+                parking,
+                elevator,
+                air_conditioning,
+                status
+            )
+
+            VALUES (
+                %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, 'active'
+            )
+
+            RETURNING id
+        """, (
+            session["user_id"],
+            title,
+            description or None,
+            property_type,
+            price_value,
+            city,
+            district or None,
+            address or None,
+            latitude_value,
+            longitude_value,
+            surface_value,
+            bedrooms_value,
+            bathrooms_value,
+            furnished,
+            parking,
+            elevator,
+            air_conditioning
+        ))
+
+        property_created = cur.fetchone()
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    except Exception as e:
+
+        if conn:
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "add_property.html",
+            message=f"Erreur: {e}"
+        )
 # ============================================
 # DATABASE INIT
 # ============================================

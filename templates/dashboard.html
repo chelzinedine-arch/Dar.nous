@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Dar.nous</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/auth.css') }}">
+
+    <style>
+
+        .dashboard-page {
+            min-height: 100vh;
+            background: #f5f7fa;
+            padding: 40px 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .dashboard-header {
+            background: #17202a;
+            color: white;
+            padding: 35px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .dashboard-header h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+        }
+
+        .dashboard-header p {
+            color: #c5cbd1;
+            margin: 0;
+        }
+
+        .add-property-btn {
+            background: #e85d04;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-weight: 700;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fill, minmax(280px, 1fr));
+
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,.06);
+        }
+
+        .dashboard-card h3 {
+            margin: 0 0 10px;
+        }
+
+        .property-type {
+            color: #e85d04;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .property-price {
+            margin: 13px 0;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .property-location {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .property-meta {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .property-meta span {
+            background: #f1f3f5;
+            padding: 6px 9px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .empty-dashboard {
+            background: white;
+            padding: 60px 25px;
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .empty-dashboard h2 {
+            margin-bottom: 10px;
+        }
+
+        .empty-dashboard p {
+            color: #777;
+            margin-bottom: 22px;
+        }
+
+        .status-active {
+            color: #198754;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        @media (max-width: 700px) {
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="dashboard-page">
+
+    <div class="dashboard-container">
+
+
+        <a href="/"
+           style="
+               display:inline-block;
+               margin-bottom:18px;
+               color:#e85d04;
+               font-weight:700;
+           ">
+            ← Accueil
+        </a>
+
+
+        <div class="dashboard-header">
+
+            <div>
+
+                <h1>
+                    Mon Dashboard
+                </h1>
+
+                <p>
+                    Bienvenue {{ session.get("username") }}
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('add_property') }}"
+                class="add-property-btn"
+            >
+                + Ajouter une annonce
+            </a>
+
+        </div>
+
+
+        {% if properties %}
+
+
+            <div class="property-grid">
+
+                {% for property in properties %}
+
+                    <article class="dashboard-card">
+
+                        <div class="property-type">
+                            {{ property.property_type }}
+                        </div>
+
+
+                        <h3>
+                            {{ property.title }}
+                        </h3>
+
+
+                        <div class="property-price">
+                            {{ property.price }} DH
+                        </div>
+
+
+                        <div class="property-location">
+
+                            📍
+                            {{ property.city }}
+
+                            {% if property.district %}
+                                — {{ property.district }}
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="property-meta">
+
+                            <span>
+                                📐
+                                {{ property.surface or 0 }} m²
+                            </span>
+
+                            <span>
+                                🛏️
+                                {{ property.bedrooms }}
+                            </span>
+
+                            <span>
+                                🚿
+                                {{ property.bathrooms }}
+                            </span>
+
+                        </div>
+
+
+                        <div style="margin-top:15px">
+
+                            {% if property.status == "active" %}
+
+                                <span class="status-active">
+                                    ● Active
+                                </span>
+
+                            {% else %}
+
+                                <span>
+                                    {{ property.status }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="empty-dashboard">
+
+                <h2>
+                    Vous n'avez encore aucune annonce
+                </h2>
+
+                <p>
+                    Ajoutez votre premier logement sur Dar.nous.
+                </p>
+
+                <a
+                    href="{{ url_for('add_property') }}"
+                    class="add-property-btn"
+                >
+                    + Ajouter ma première annonce
+                </a>
+
+            </div>
+
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
