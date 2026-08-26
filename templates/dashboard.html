@@ -141,6 +141,19 @@
         }
 
     </style>
+    <style>
+    .view-property-button {
+      display: block;
+      margin-top: 18px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: #e85d04;
+      color: white;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    </style>
 
 </head>
 
@@ -259,6 +272,11 @@
                                 </span>
 
                             {% endif %}
+                            <a href="{{ url_for('property_details', property_id=property.id) }}"
+                               class="view-property-button"
+                            >
+                            Voir l'annonce →
+                            </a>
 
                         </div>
 

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ property.title }} - Dar.nous
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/property.css') }}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================================
+         NAVBAR
+    ========================================== -->
+
+    <header class="property-navbar">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="property-logo"
+        >
+            Dar<span>.nous</span>
+        </a>
+
+
+        <div class="property-nav-actions">
+
+            {% if session.get("user_id") %}
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="nav-link"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="nav-user"
+                >
+                    👤 {{ session.get("username") }}
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('login') }}"
+                    class="nav-link"
+                >
+                    Se connecter
+                </a>
+
+                <a
+                    href="{{ url_for('register') }}"
+                    class="nav-register"
+                >
+                    Créer un compte
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================== -->
+
+    <main class="property-page">
+
+        <div class="property-container">
+
+
+            <!-- BACK -->
+
+            <a
+                href="{{ url_for('home') }}"
+                class="property-back"
+            >
+                ← Retour à l'accueil
+            </a>
+
+
+            <!-- =====================================
+                 PROPERTY HEADER
+            ====================================== -->
+
+            <section class="property-header">
+
+                <div class="property-heading">
+
+                    <span class="property-type">
+                        {{ property.property_type }}
+                    </span>
+
+                    <h1>
+                        {{ property.title }}
+                    </h1>
+
+                    <p class="property-location">
+
+                        📍
+
+                        {{ property.city }}
+
+                        {% if property.district %}
+                            — {{ property.district }}
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+                <div class="property-main-price">
+
+                    <strong>
+                        {{ property.price }} DH
+                    </strong>
+
+                    <span>
+                        / mois
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 MAIN LAYOUT
+            ====================================== -->
+
+            <section class="property-layout">
+
+
+                <!-- =================================
+                     LEFT SIDE
+                ================================== -->
+
+                <div class="property-main">
+
+
+                    <!-- IMAGE AREA -->
+
+                    <div class="property-image-main">
+
+                        <div class="image-placeholder">
+
+                            <div class="placeholder-icon">
+                                🏠
+                            </div>
+
+                            <p>
+                                Photos du logement
+                            </p>
+
+                            <small>
+                                Les photos seront ajoutées
+                                prochainement.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================
+                         QUICK INFORMATION
+                    ================================== -->
+
+                    <div class="property-quick-info">
+
+
+                        <div class="quick-info-item">
+
+                            <span>
+                                📐
+                            </span>
+
+                            <strong>
+                                {{ property.surface or 0 }} m²
+                            </strong>
+
+                            <small>
+                                Surface
+                            </small>
+
+                        </div>
+
+
+                        <div class="quick-info-item">
+
+                            <span>
+                                🛏️
+                            </span>
+
+                            <strong>
+                                {{ property.bedrooms }}
+                            </strong>
+
+                            <small>
+                                Chambres
+                            </small>
+
+                        </div>
+
+
+                        <div class="quick-info-item">
+
+                            <span>
+                                🚿
+                            </span>
+
+                            <strong>
+                                {{ property.bathrooms }}
+                            </strong>
+
+                            <small>
+                                Salles de bain
+                            </small>
+
+                        </div>
+
+
+                        <div class="quick-info-item">
+
+                            <span>
+                                🏠
+                            </span>
+
+                            <strong>
+                                {{ property.property_type }}
+                            </strong>
+
+                            <small>
+                                Type
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================
+                         DESCRIPTION
+                    ================================== -->
+
+                    <section class="property-section">
+
+                        <h2>
+                            Description
+                        </h2>
+
+                        {% if property.description %}
+
+                            <p class="description-text">
+                                {{ property.description }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="empty-text">
+                                Aucune description disponible.
+                            </p>
+
+                        {% endif %}
+
+                    </section>
+
+
+                    <!-- =================================
+                         EQUIPMENT
+                    ================================== -->
+
+                    <section class="property-section">
+
+                        <h2>
+                            Équipements
+                        </h2>
+
+
+                        <div class="equipment-grid">
+
+
+                            <div
+                                class="
+                                    equipment-item
+                                    {% if not property.furnished %}
+                                        disabled
+                                    {% endif %}
+                                "
+                            >
+
+                                🛋️
+
+                                <span>
+                                    Meublé
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    equipment-item
+                                    {% if not property.parking %}
+                                        disabled
+                                    {% endif %}
+                                "
+                            >
+
+                                🚗
+
+                                <span>
+                                    Parking
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    equipment-item
+                                    {% if not property.elevator %}
+                                        disabled
+                                    {% endif %}
+                                "
+                            >
+
+                                🛗
+
+                                <span>
+                                    Ascenseur
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="
+                                    equipment-item
+                                    {% if not property.air_conditioning %}
+                                        disabled
+                                    {% endif %}
+                                "
+                            >
+
+                                ❄️
+
+                                <span>
+                                    Climatisation
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- =================================
+                         ADDRESS
+                    ================================== -->
+
+                    <section class="property-section">
+
+                        <h2>
+                            Adresse
+                        </h2>
+
+                        <p class="address-text">
+
+                            📍
+
+                            {% if property.address %}
+                                {{ property.address }},
+                            {% endif %}
+
+                            {{ property.city }}
+
+                            {% if property.district %}
+                                — {{ property.district }}
+                            {% endif %}
+
+                        </p>
+
+                    </section>
+
+
+                    <!-- =================================
+                         MAP
+                    ================================== -->
+
+                    <section class="property-section">
+
+                        <h2>
+                            Localisation
+                        </h2>
+
+
+                        {% if property.latitude and property.longitude %}
+
+                            <div
+                                id="property-map"
+                                data-lat="{{ property.latitude }}"
+                                data-lng="{{ property.longitude }}"
+                                data-title="{{ property.title|e }}"
+                            ></div>
+
+                        {% else %}
+
+                            <div class="map-empty">
+
+                                📍
+
+                                La localisation de cette annonce
+                                n'est pas disponible.
+
+                            </div>
+
+                        {% endif %}
+
+                    </section>
+
+
+                </div>
+
+
+                <!-- =================================
+                     RIGHT SIDEBAR
+                ================================== -->
+
+                <aside class="property-sidebar">
+
+
+                    <!-- OWNER CARD -->
+
+                    <div class="owner-card">
+
+
+                        <div class="owner-header">
+
+
+                            <div class="owner-avatar">
+
+                                {% if property.owner_first_name %}
+
+                                    {{ property.owner_first_name[0]|upper }}
+
+                                {% else %}
+
+                                    {{ property.owner_username[0]|upper }}
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <h3>
+
+                                    {% if property.owner_first_name %}
+
+                                        {{ property.owner_first_name }}
+
+                                        {{ property.owner_last_name or "" }}
+
+                                    {% else %}
+
+                                        {{ property.owner_username }}
+
+                                    {% endif %}
+
+                                </h3>
+
+
+                                <p>
+                                    Propriétaire
+                                </p>
+
+
+                                {% if property.owner_verified %}
+
+                                    <span class="verified-owner">
+                                        ✓ Compte vérifié
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- CONTACT BUTTONS -->
+
+                        <div class="owner-actions">
+
+
+                            {% if property.owner_phone %}
+
+                                <a
+                                    href="tel:{{ property.owner_phone }}"
+                                    class="phone-button"
+                                >
+                                    📞 Appeler
+                                </a>
+
+                            {% else %}
+
+                                <span class="phone-button">
+                                    📞 Appeler
+                                </span>
+
+                            {% endif %}
+
+
+                            {% if session.get("user_id") %}
+
+                                <a
+                                    href="{{ url_for('dashboard') }}"
+                                    class="chat-button"
+                                >
+                                    💬 Contacter
+                                </a>
+
+                            {% else %}
+
+                                <a
+                                    href="{{ url_for('login') }}"
+                                    class="chat-button"
+                                >
+                                    💬 Contacter
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FAVORITE -->
+
+                    <button
+                        type="button"
+                        id="favoriteButton"
+                        class="favorite-property-button"
+                    >
+
+                        <span class="favorite-icon">
+                            ♡
+                        </span>
+
+                        <span class="favorite-text">
+                            Ajouter aux favoris
+                        </span>
+
+                    </button>
+
+
+                    <!-- REPORT -->
+
+                    <button
+                        type="button"
+                        class="report-button"
+                        id="reportButton"
+                    >
+                        🚩 Signaler cette annonce
+                    </button>
+
+
+                    <!-- PROPERTY INFORMATION -->
+
+                    <div class="property-info-card">
+
+
+                        <div>
+
+                            <span>
+                                Statut
+                            </span>
+
+                            <strong>
+
+                                {% if property.status == "active" %}
+
+                                    Disponible
+
+                                {% elif property.status == "rented" %}
+
+                                    Loué
+
+                                {% elif property.status == "pending" %}
+
+                                    En attente
+
+                                {% elif property.status == "hidden" %}
+
+                                    Masquée
+
+                                {% else %}
+
+                                    {{ property.status }}
+
+                                {% endif %}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Publiée le
+                            </span>
+
+                            <strong>
+
+                                {{ property.created_at.strftime('%d/%m/%Y') }}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Ville
+                            </span>
+
+                            <strong>
+                                {{ property.city }}
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                Type
+                            </span>
+
+                            <strong>
+                                {{ property.property_type }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                </aside>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER
+    ========================================== -->
+
+    <footer class="property-footer">
+
+        <div class="property-logo">
+            Dar<span>.nous</span>
+        </div>
+
+        <p>
+            © 2026 Dar.nous — La location immobilière au Maroc
+        </p>
+
+    </footer>
+
+
+    <!-- =========================================
+         LEAFLET
+    ========================================== -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    ></script>
+
+
+    <!-- =========================================
+         PROPERTY JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+        const propertyMapElement =
+            document.getElementById("property-map");
+
+
+        if (propertyMapElement) {
+
+            const latitude =
+                Number(
+                    propertyMapElement.dataset.lat
+                );
+
+
+            const longitude =
+                Number(
+                    propertyMapElement.dataset.lng
+                );
+
+
+            const title =
+                propertyMapElement.dataset.title;
+
+
+            if (
+                Number.isFinite(latitude) &&
+                Number.isFinite(longitude)
+            ) {
+
+                const map =
+                    L.map(
+                        propertyMapElement
+                    ).setView(
+                        [
+                            latitude,
+                            longitude
+                        ],
+                        15
+                    );
+
+
+                L.tileLayer(
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {
+                        attribution:
+                            "&copy; OpenStreetMap contributors"
+                    }
+                ).addTo(map);
+
+
+                L.marker(
+                    [
+                        latitude,
+                        longitude
+                    ]
+                )
+                .addTo(map)
+                .bindPopup(title)
+                .openPopup();
+
+            }
+
+        }
+
+
+        /* =====================================
+           FAVORITE BUTTON
+        ====================================== */
+
+        const favoriteButton =
+            document.getElementById(
+                "favoriteButton"
+            );
+
+
+        if (favoriteButton) {
+
+            favoriteButton.addEventListener(
+                "click",
+                function () {
+
+                    const icon =
+                        this.querySelector(
+                            ".favorite-icon"
+                        );
+
+                    const text =
+                        this.querySelector(
+                            ".favorite-text"
+                        );
+
+
+                    this.classList.toggle(
+                        "active"
+                    );
+
+
+                    if (
+                        this.classList.contains(
+                            "active"
+                        )
+                    ) {
+
+                        icon.textContent = "♥";
+
+                        text.textContent =
+                            "Ajouté aux favoris";
+
+                    } else {
+
+                        icon.textContent = "♡";
+
+                        text.textContent =
+                            "Ajouter aux favoris";
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           REPORT BUTTON
+        ====================================== */
+
+        const reportButton =
+            document.getElementById(
+                "reportButton"
+            );
+
+
+        if (reportButton) {
+
+            reportButton.addEventListener(
+                "click",
+                function () {
+
+                    alert(
+                        "La fonctionnalité de signalement sera disponible prochainement."
+                    );
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
