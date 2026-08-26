@@ -21,9 +21,9 @@ from werkzeug.security import (
 )
 
 
-# ============================================
+# =========================================================
 # CONFIG
-# ============================================
+# =========================================================
 
 load_dotenv()
 
@@ -35,9 +35,9 @@ app.secret_key = os.environ.get(
 )
 
 
-# ============================================
+# =========================================================
 # DATABASE
-# ============================================
+# =========================================================
 
 def get_db():
     database_url = os.environ.get("DATABASE_URL")
@@ -52,287 +52,19 @@ def get_db():
         cursor_factory=RealDictCursor
     )
 
-# ============================================
-# DASHBOARD
-# ============================================
 
-@app.route("/dashboard")
-def dashboard():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    conn = None
-
-    try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("""
-            SELECT
-                id,
-                title,
-                property_type,
-                price,
-                city,
-                district,
-                surface,
-                bedrooms,
-                bathrooms,
-                status,
-                created_at
-            FROM properties
-            WHERE owner_id = %s
-            ORDER BY created_at DESC
-        """, (
-            session["user_id"],
-        ))
-
-        properties = cur.fetchall()
-
-        cur.close()
-        conn.close()
-
-        return render_template(
-            "dashboard.html",
-            properties=properties
-        )
-
-    except Exception as e:
-
-        if conn:
-            conn.close()
-
-        return render_template(
-            "dashboard.html",
-            properties=[],
-            message=f"Erreur: {e}"
-        )
-
-
-# ============================================
-# ADD PROPERTY
-# ============================================
-
-@app.route("/add_property", methods=["GET", "POST"])
-def add_property():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    if request.method == "GET":
-
-        return render_template(
-            "add_property.html",
-            message=""
-        )
-
-
-    title = request.form.get(
-        "title", ""
-    ).strip()
-
-    description = request.form.get(
-        "description", ""
-    ).strip()
-
-    property_type = request.form.get(
-        "property_type", ""
-    ).strip()
-
-    city = request.form.get(
-        "city", ""
-    ).strip()
-
-    district = request.form.get(
-        "district", ""
-    ).strip()
-
-    address = request.form.get(
-        "address", ""
-    ).strip()
-
-    price = request.form.get(
-        "price", ""
-    ).strip()
-
-    surface = request.form.get(
-        "surface", ""
-    ).strip()
-
-    bedrooms = request.form.get(
-        "bedrooms", "0"
-    ).strip()
-
-    bathrooms = request.form.get(
-        "bathrooms", "0"
-    ).strip()
-
-    latitude = request.form.get(
-        "latitude", ""
-    ).strip()
-
-    longitude = request.form.get(
-        "longitude", ""
-    ).strip()
-
-    furnished = request.form.get(
-        "furnished"
-    ) == "on"
-
-    parking = request.form.get(
-        "parking"
-    ) == "on"
-
-    elevator = request.form.get(
-        "elevator"
-    ) == "on"
-
-    air_conditioning = request.form.get(
-        "air_conditioning"
-    ) == "on"
-
-
-    # ----------------------------------------
-    # VALIDATION
-    # ----------------------------------------
-
-    if not title or not property_type or not city or not price:
-
-        return render_template(
-            "add_property.html",
-            message="Remplissez les champs obligatoires."
-        )
-
-
-    try:
-
-        price_value = float(price)
-
-        surface_value = (
-            float(surface)
-            if surface
-            else None
-        )
-
-        bedrooms_value = int(
-            bedrooms or 0
-        )
-
-        bathrooms_value = int(
-            bathrooms or 0
-        )
-
-        latitude_value = (
-            float(latitude)
-            if latitude
-            else None
-        )
-
-        longitude_value = (
-            float(longitude)
-            if longitude
-            else None
-        )
-
-    except ValueError:
-
-        return render_template(
-            "add_property.html",
-            message="Vérifiez les valeurs numériques."
-        )
-
-
-    conn = None
-
-    try:
-
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("""
-            INSERT INTO properties (
-                owner_id,
-                title,
-                description,
-                property_type,
-                price,
-                city,
-                district,
-                address,
-                latitude,
-                longitude,
-                surface,
-                bedrooms,
-                bathrooms,
-                furnished,
-                parking,
-                elevator,
-                air_conditioning,
-                status
-            )
-
-            VALUES (
-                %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, 'active'
-            )
-
-            RETURNING id
-        """, (
-            session["user_id"],
-            title,
-            description or None,
-            property_type,
-            price_value,
-            city,
-            district or None,
-            address or None,
-            latitude_value,
-            longitude_value,
-            surface_value,
-            bedrooms_value,
-            bathrooms_value,
-            furnished,
-            parking,
-            elevator,
-            air_conditioning
-        ))
-
-        property_created = cur.fetchone()
-
-        conn.commit()
-
-        cur.close()
-        conn.close()
-
-        return redirect(
-            url_for("dashboard")
-        )
-
-
-    except Exception as e:
-
-        if conn:
-            conn.rollback()
-            conn.close()
-
-        return render_template(
-            "add_property.html",
-            message=f"Erreur: {e}"
-        )
-# ============================================
+# =========================================================
 # DATABASE INIT
-# ============================================
+# =========================================================
 
 def init_db():
 
     conn = get_db()
     cur = conn.cursor()
 
-    # ----------------------------------------
+    # -----------------------------------------------------
     # USERS
-    # ----------------------------------------
+    # -----------------------------------------------------
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
@@ -360,10 +92,9 @@ def init_db():
         )
     """)
 
-
-    # ----------------------------------------
+    # -----------------------------------------------------
     # PROPERTIES
-    # ----------------------------------------
+    # -----------------------------------------------------
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS properties (
@@ -454,10 +185,9 @@ def init_db():
         )
     """)
 
-
-    # ----------------------------------------
+    # -----------------------------------------------------
     # INDEXES
-    # ----------------------------------------
+    # -----------------------------------------------------
 
     cur.execute("""
         CREATE INDEX IF NOT EXISTS idx_properties_owner
@@ -489,16 +219,15 @@ def init_db():
         ON properties(created_at DESC)
     """)
 
-
     conn.commit()
 
     cur.close()
     conn.close()
 
 
-# ============================================
+# =========================================================
 # HOME
-# ============================================
+# =========================================================
 
 @app.route("/")
 def home():
@@ -509,23 +238,34 @@ def home():
     )
 
 
-# ============================================
+# =========================================================
 # REGISTER
-# ============================================
+# =========================================================
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
     if request.method == "GET":
+
         return render_template(
             "register.html",
             message=""
         )
 
+    username = request.form.get(
+        "username",
+        ""
+    ).strip()
 
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
-    password = request.form.get("password", "")
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = request.form.get(
+        "password",
+        ""
+    )
 
     first_name = request.form.get(
         "first_name",
@@ -542,10 +282,9 @@ def register():
         ""
     ).strip()
 
-
-    # ----------------------------------------
+    # -----------------------------------------------------
     # VALIDATION
-    # ----------------------------------------
+    # -----------------------------------------------------
 
     if not username or not email or not password:
 
@@ -554,14 +293,12 @@ def register():
             message="Veuillez remplir tous les champs obligatoires."
         )
 
-
     if len(username) < 3:
 
         return render_template(
             "register.html",
             message="Le nom d'utilisateur doit contenir au moins 3 caractères."
         )
-
 
     if len(password) < 6:
 
@@ -570,15 +307,13 @@ def register():
             message="Le mot de passe doit contenir au moins 6 caractères."
         )
 
-
-    # ----------------------------------------
+    # -----------------------------------------------------
     # HASH PASSWORD
-    # ----------------------------------------
+    # -----------------------------------------------------
 
     password_hash = generate_password_hash(
         password
     )
-
 
     conn = None
 
@@ -596,7 +331,6 @@ def register():
                 last_name,
                 phone
             )
-
             VALUES (
                 %s,
                 %s,
@@ -605,7 +339,6 @@ def register():
                 %s,
                 %s
             )
-
             RETURNING id
         """, (
             username,
@@ -616,7 +349,6 @@ def register():
             phone or None
         ))
 
-
         user = cur.fetchone()
 
         conn.commit()
@@ -624,17 +356,20 @@ def register():
         cur.close()
         conn.close()
 
+        # Login مباشرة بعد التسجيل
         session.clear()
 
         session["user_id"] = user["id"]
         session["username"] = username
 
-        return redirect(url_for("home"))
-
+        return redirect(
+            url_for("home")
+        )
 
     except psycopg2.errors.UniqueViolation:
 
         if conn:
+
             conn.rollback()
             conn.close()
 
@@ -643,10 +378,10 @@ def register():
             message="Username ou email déjà utilisé."
         )
 
-
     except Exception as e:
 
         if conn:
+
             conn.rollback()
             conn.close()
 
@@ -656,9 +391,9 @@ def register():
         )
 
 
-# ============================================
+# =========================================================
 # LOGIN
-# ============================================
+# =========================================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -670,7 +405,6 @@ def login():
             message=""
         )
 
-
     username = request.form.get(
         "username",
         ""
@@ -681,14 +415,12 @@ def login():
         ""
     )
 
-
     if not username or not password:
 
         return render_template(
             "login.html",
             message="Veuillez remplir tous les champs."
         )
-
 
     conn = None
 
@@ -716,14 +448,12 @@ def login():
         cur.close()
         conn.close()
 
-
         if not user:
 
             return render_template(
                 "login.html",
                 message="Nom d'utilisateur ou mot de passe incorrect."
             )
-
 
         if not check_password_hash(
             user["password_hash"],
@@ -735,25 +465,20 @@ def login():
                 message="Nom d'utilisateur ou mot de passe incorrect."
             )
 
-
-        # ------------------------------------
-        # SESSION
-        # ------------------------------------
-
         session.clear()
 
         session["user_id"] = user["id"]
-        session["username"] = user["username"]
 
+        session["username"] = user["username"]
 
         return redirect(
             url_for("home")
         )
 
-
     except Exception as e:
 
         if conn:
+
             conn.close()
 
         return render_template(
@@ -762,9 +487,9 @@ def login():
         )
 
 
-# ============================================
+# =========================================================
 # LOGOUT
-# ============================================
+# =========================================================
 
 @app.route("/logout")
 def logout():
@@ -776,9 +501,633 @@ def logout():
     )
 
 
-# ============================================
-# CURRENT USER
-# ============================================
+# =========================================================
+# PROFILE
+# =========================================================
+
+@app.route("/profile")
+def profile():
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+                id,
+                username,
+                email,
+                first_name,
+                last_name,
+                phone,
+                profile_image,
+                is_verified,
+                created_at
+            FROM users
+            WHERE id = %s
+        """, (
+            session["user_id"],
+        ))
+
+        user = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if not user:
+
+            session.clear()
+
+            return redirect(
+                url_for("login")
+            )
+
+        return render_template(
+            "profile.html",
+            user=user,
+            message=""
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user=None,
+            message=f"Erreur: {e}"
+        )
+
+
+# =========================================================
+# UPDATE PROFILE
+# =========================================================
+
+@app.route("/profile/update", methods=["POST"])
+def update_profile():
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    first_name = request.form.get(
+        "first_name",
+        ""
+    ).strip()
+
+    last_name = request.form.get(
+        "last_name",
+        ""
+    ).strip()
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    phone = request.form.get(
+        "phone",
+        ""
+    ).strip()
+
+    if not email:
+
+        return redirect(
+            url_for("profile")
+        )
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            UPDATE users
+
+            SET
+                first_name = %s,
+                last_name = %s,
+                email = %s,
+                phone = %s,
+                updated_at = CURRENT_TIMESTAMP
+
+            WHERE id = %s
+        """, (
+            first_name or None,
+            last_name or None,
+            email,
+            phone or None,
+            session["user_id"]
+        ))
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        return redirect(
+            url_for("profile")
+        )
+
+    except psycopg2.errors.UniqueViolation:
+
+        if conn:
+
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user={
+                "username": session.get("username"),
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "phone": phone,
+                "is_verified": False
+            },
+            message="Cet email est déjà utilisé."
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "profile.html",
+            user={
+                "username": session.get("username"),
+                "email": email,
+                "first_name": first_name,
+                "last_name": last_name,
+                "phone": phone,
+                "is_verified": False
+            },
+            message=f"Erreur: {e}"
+        )
+
+
+# =========================================================
+# DASHBOARD
+# =========================================================
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+                id,
+                title,
+                description,
+                property_type,
+                price,
+                city,
+                district,
+                address,
+                latitude,
+                longitude,
+                surface,
+                bedrooms,
+                bathrooms,
+                furnished,
+                parking,
+                elevator,
+                air_conditioning,
+                status,
+                created_at,
+                updated_at
+            FROM properties
+            WHERE owner_id = %s
+            ORDER BY created_at DESC
+        """, (
+            session["user_id"],
+        ))
+
+        properties = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return render_template(
+            "dashboard.html",
+            properties=properties,
+            message=""
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            conn.close()
+
+        return render_template(
+            "dashboard.html",
+            properties=[],
+            message=f"Erreur: {e}"
+        )
+
+
+# =========================================================
+# ADD PROPERTY
+# =========================================================
+
+@app.route("/add_property", methods=["GET", "POST"])
+def add_property():
+
+    if "user_id" not in session:
+
+        return redirect(
+            url_for("login")
+        )
+
+    if request.method == "GET":
+
+        return render_template(
+            "add_property.html",
+            message=""
+        )
+
+    # -----------------------------------------------------
+    # FORM DATA
+    # -----------------------------------------------------
+
+    title = request.form.get(
+        "title",
+        ""
+    ).strip()
+
+    description = request.form.get(
+        "description",
+        ""
+    ).strip()
+
+    property_type = request.form.get(
+        "property_type",
+        ""
+    ).strip()
+
+    price = request.form.get(
+        "price",
+        ""
+    ).strip()
+
+    city = request.form.get(
+        "city",
+        ""
+    ).strip()
+
+    district = request.form.get(
+        "district",
+        ""
+    ).strip()
+
+    address = request.form.get(
+        "address",
+        ""
+    ).strip()
+
+    surface = request.form.get(
+        "surface",
+        ""
+    ).strip()
+
+    bedrooms = request.form.get(
+        "bedrooms",
+        "0"
+    ).strip()
+
+    bathrooms = request.form.get(
+        "bathrooms",
+        "0"
+    ).strip()
+
+    latitude = request.form.get(
+        "latitude",
+        ""
+    ).strip()
+
+    longitude = request.form.get(
+        "longitude",
+        ""
+    ).strip()
+
+    furnished = (
+        request.form.get("furnished") == "on"
+    )
+
+    parking = (
+        request.form.get("parking") == "on"
+    )
+
+    elevator = (
+        request.form.get("elevator") == "on"
+    )
+
+    air_conditioning = (
+        request.form.get("air_conditioning") == "on"
+    )
+
+
+    # -----------------------------------------------------
+    # REQUIRED FIELDS
+    # -----------------------------------------------------
+
+    if (
+        not title
+        or not property_type
+        or not city
+        or not price
+    ):
+
+        return render_template(
+            "add_property.html",
+            message="Titre, type, ville et prix sont obligatoires."
+        )
+
+
+    # -----------------------------------------------------
+    # NUMERIC VALUES
+    # -----------------------------------------------------
+
+    try:
+
+        price_value = float(price)
+
+        surface_value = (
+            float(surface)
+            if surface
+            else None
+        )
+
+        bedrooms_value = int(
+            bedrooms or 0
+        )
+
+        bathrooms_value = int(
+            bathrooms or 0
+        )
+
+        latitude_value = (
+            float(latitude)
+            if latitude
+            else None
+        )
+
+        longitude_value = (
+            float(longitude)
+            if longitude
+            else None
+        )
+
+    except ValueError:
+
+        return render_template(
+            "add_property.html",
+            message="Vérifiez les valeurs numériques."
+        )
+
+
+    # -----------------------------------------------------
+    # EXTRA VALIDATION
+    # -----------------------------------------------------
+
+    if price_value < 0:
+
+        return render_template(
+            "add_property.html",
+            message="Le prix doit être positif."
+        )
+
+    if bedrooms_value < 0:
+
+        return render_template(
+            "add_property.html",
+            message="Le nombre de chambres est invalide."
+        )
+
+    if bathrooms_value < 0:
+
+        return render_template(
+            "add_property.html",
+            message="Le nombre de salles de bain est invalide."
+        )
+
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        # -------------------------------------------------
+        # INSERT PROPERTY
+        # -------------------------------------------------
+
+        cur.execute("""
+            INSERT INTO properties (
+                owner_id,
+                title,
+                description,
+                property_type,
+                price,
+                city,
+                district,
+                address,
+                latitude,
+                longitude,
+                surface,
+                bedrooms,
+                bathrooms,
+                furnished,
+                parking,
+                elevator,
+                air_conditioning,
+                status
+            )
+
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                'active'
+            )
+
+            RETURNING id
+        """, (
+            session["user_id"],
+            title,
+            description or None,
+            property_type,
+            price_value,
+            city,
+            district or None,
+            address or None,
+            latitude_value,
+            longitude_value,
+            surface_value,
+            bedrooms_value,
+            bathrooms_value,
+            furnished,
+            parking,
+            elevator,
+            air_conditioning
+        ))
+
+        new_property = cur.fetchone()
+
+        conn.commit()
+
+        cur.close()
+        conn.close()
+
+        # مهم:
+        # كنرجعو مباشرة للـdashboard
+        # باش الإعلان الجديد يبان فيه.
+        return redirect(
+            url_for("dashboard")
+        )
+
+
+    except Exception as e:
+
+        if conn:
+
+            conn.rollback()
+            conn.close()
+
+        return render_template(
+            "add_property.html",
+            message=f"Erreur lors de la création de l'annonce: {e}"
+        )
+
+
+# =========================================================
+# PROPERTY DETAILS
+# =========================================================
+
+@app.route("/property/<int:property_id>")
+def property_details(property_id):
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+
+                p.id,
+                p.title,
+                p.description,
+                p.property_type,
+                p.price,
+                p.city,
+                p.district,
+                p.address,
+                p.latitude,
+                p.longitude,
+                p.surface,
+                p.bedrooms,
+                p.bathrooms,
+                p.furnished,
+                p.parking,
+                p.elevator,
+                p.air_conditioning,
+                p.status,
+                p.created_at,
+
+                u.id AS owner_id,
+                u.username AS owner_username,
+                u.first_name AS owner_first_name,
+                u.last_name AS owner_last_name,
+                u.phone AS owner_phone,
+                u.profile_image AS owner_profile_image,
+                u.is_verified AS owner_verified
+
+            FROM properties p
+
+            INNER JOIN users u
+                ON p.owner_id = u.id
+
+            WHERE p.id = %s
+        """, (
+            property_id,
+        ))
+
+        property_data = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        if not property_data:
+
+            return "Property not found", 404
+
+        return render_template(
+            "property.html",
+            property=property_data
+        )
+
+    except Exception as e:
+
+        if conn:
+
+            conn.close()
+
+        return f"Database error: {e}", 500
+
+
+# =========================================================
+# API - CURRENT USER
+# =========================================================
 
 @app.route("/api/me")
 def current_user():
@@ -819,7 +1168,6 @@ def current_user():
         cur.close()
         conn.close()
 
-
         if not user:
 
             session.clear()
@@ -828,16 +1176,15 @@ def current_user():
                 "logged_in": False
             })
 
-
         return jsonify({
             "logged_in": True,
             "user": user
         })
 
-
     except Exception as e:
 
         if conn:
+
             conn.close()
 
         return jsonify({
@@ -846,9 +1193,9 @@ def current_user():
         }), 500
 
 
-# ============================================
+# =========================================================
 # DATABASE TEST
-# ============================================
+# =========================================================
 
 @app.route("/api/db-test")
 def db_test():
@@ -861,17 +1208,16 @@ def db_test():
         cur.execute("""
             SELECT
                 (SELECT COUNT(*) FROM users)
-                AS users_count,
+                    AS users_count,
 
                 (SELECT COUNT(*) FROM properties)
-                AS properties_count
+                    AS properties_count
         """)
 
         result = cur.fetchone()
 
         cur.close()
         conn.close()
-
 
         return jsonify({
             "success": True,
@@ -880,7 +1226,6 @@ def db_test():
             "properties": result["properties_count"]
         })
 
-
     except Exception as e:
 
         return jsonify({
@@ -888,162 +1233,10 @@ def db_test():
             "error": str(e)
         }), 500
 
-# ============================================
-# PROFILE
-# ============================================
 
-@app.route("/profile")
-def profile():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    conn = None
-
-    try:
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("""
-            SELECT
-                id,
-                username,
-                email,
-                first_name,
-                last_name,
-                phone,
-                profile_image,
-                is_verified,
-                created_at
-            FROM users
-            WHERE id = %s
-        """, (
-            session["user_id"],
-        ))
-
-        user = cur.fetchone()
-
-        cur.close()
-        conn.close()
-
-        if not user:
-            session.clear()
-            return redirect(url_for("login"))
-
-        return render_template(
-            "profile.html",
-            user=user,
-            message=""
-        )
-
-    except Exception as e:
-
-        if conn:
-            conn.close()
-
-        return render_template(
-            "profile.html",
-            user=None,
-            message=f"Erreur: {e}"
-        )
-
-
-# ============================================
-# UPDATE PROFILE
-# ============================================
-
-@app.route("/profile/update", methods=["POST"])
-def update_profile():
-
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    first_name = request.form.get(
-        "first_name", ""
-    ).strip()
-
-    last_name = request.form.get(
-        "last_name", ""
-    ).strip()
-
-    email = request.form.get(
-        "email", ""
-    ).strip().lower()
-
-    phone = request.form.get(
-        "phone", ""
-    ).strip()
-
-    conn = None
-
-    try:
-
-        conn = get_db()
-        cur = conn.cursor()
-
-        cur.execute("""
-            UPDATE users
-            SET
-                first_name = %s,
-                last_name = %s,
-                email = %s,
-                phone = %s,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE id = %s
-        """, (
-            first_name or None,
-            last_name or None,
-            email,
-            phone or None,
-            session["user_id"]
-        ))
-
-        conn.commit()
-
-        cur.close()
-        conn.close()
-
-        return redirect(url_for("profile"))
-
-    except psycopg2.errors.UniqueViolation:
-
-        if conn:
-            conn.rollback()
-            conn.close()
-
-        return render_template(
-            "profile.html",
-            user={
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email,
-                "phone": phone,
-                "username": session.get("username")
-            },
-            message="Cet email est déjà utilisé."
-        )
-
-    except Exception as e:
-
-        if conn:
-            conn.rollback()
-            conn.close()
-
-        return render_template(
-            "profile.html",
-            user={
-                "first_name": first_name,
-                "last_name": last_name,
-                "email": email,
-                "phone": phone,
-                "username": session.get("username")
-            },
-            message=f"Erreur: {e}"
-        )
-
-# ============================================
+# =========================================================
 # START SERVER
-# ============================================
+# =========================================================
 
 if __name__ == "__main__":
 
@@ -1063,7 +1256,6 @@ if __name__ == "__main__":
         print("DATABASE ERROR")
         print(e)
         print("===================================")
-
 
     port = int(
         os.environ.get(

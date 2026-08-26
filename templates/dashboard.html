@@ -2,319 +2,624 @@
 <html lang="fr">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Dashboard - Dar.nous</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/auth.css') }}">
-
-    <style>
-
-        .dashboard-page {
-            min-height: 100vh;
-            background: #f5f7fa;
-            padding: 40px 20px;
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        .dashboard-header {
-            background: #17202a;
-            color: white;
-            padding: 35px;
-            border-radius: 18px;
-            margin-bottom: 25px;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .dashboard-header h1 {
-            margin: 0 0 8px;
-            font-size: 32px;
-        }
-
-        .dashboard-header p {
-            color: #c5cbd1;
-            margin: 0;
-        }
-
-        .add-property-btn {
-            background: #e85d04;
-            color: white;
-            padding: 13px 20px;
-            border-radius: 9px;
-            font-weight: 700;
-        }
-
-        .property-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fill, minmax(280px, 1fr));
-
-            gap: 20px;
-        }
-
-        .dashboard-card {
-            background: white;
-            padding: 22px;
-            border-radius: 15px;
-
-            box-shadow:
-                0 8px 25px rgba(0,0,0,.06);
-        }
-
-        .dashboard-card h3 {
-            margin: 0 0 10px;
-        }
-
-        .property-type {
-            color: #e85d04;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .property-price {
-            margin: 13px 0;
-            font-size: 22px;
-            font-weight: 800;
-        }
-
-        .property-location {
-            color: #777;
-            font-size: 14px;
-        }
-
-        .property-meta {
-            margin-top: 16px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .property-meta span {
-            background: #f1f3f5;
-            padding: 6px 9px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        .empty-dashboard {
-            background: white;
-            padding: 60px 25px;
-            border-radius: 18px;
-            text-align: center;
-        }
-
-        .empty-dashboard h2 {
-            margin-bottom: 10px;
-        }
-
-        .empty-dashboard p {
-            color: #777;
-            margin-bottom: 22px;
-        }
-
-        .status-active {
-            color: #198754;
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        @media (max-width: 700px) {
-
-            .dashboard-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-        }
-
-    </style>
-    <style>
-    .view-property-button {
-      display: block;
-      margin-top: 18px;
-      padding: 11px 14px;
-      border-radius: 8px;
-      background: #e85d04;
-      color: white;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    </style>
-
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
 
 
 <body>
 
-<div class="dashboard-page">
 
-    <div class="dashboard-container">
+    <!-- =====================================================
+         NAVBAR
+    ====================================================== -->
 
+    <header class="dashboard-navbar">
 
-        <a href="/"
-           style="
-               display:inline-block;
-               margin-bottom:18px;
-               color:#e85d04;
-               font-weight:700;
-           ">
-            ← Accueil
+        <a
+            href="{{ url_for('home') }}"
+            class="dashboard-logo"
+        >
+            Dar<span>.nous</span>
         </a>
 
 
-        <div class="dashboard-header">
+        <nav class="dashboard-nav">
 
-            <div>
-
-                <h1>
-                    Mon Dashboard
-                </h1>
-
-                <p>
-                    Bienvenue {{ session.get("username") }}
-                </p>
-
-            </div>
-
-
-            <a
-                href="{{ url_for('add_property') }}"
-                class="add-property-btn"
-            >
-                + Ajouter une annonce
+            <a href="{{ url_for('home') }}">
+                Accueil
             </a>
 
-        </div>
+            <a href="{{ url_for('dashboard') }}"
+               class="active">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('profile') }}">
+                Profil
+            </a>
+
+            <a href="{{ url_for('logout') }}"
+               class="logout-link">
+                Déconnexion
+            </a>
+
+        </nav>
+
+    </header>
 
 
-        {% if properties %}
+
+    <!-- =====================================================
+         PAGE
+    ====================================================== -->
+
+    <main class="dashboard-page">
+
+        <div class="dashboard-container">
 
 
-            <div class="property-grid">
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
 
-                {% for property in properties %}
+            <section class="dashboard-welcome">
 
-                    <article class="dashboard-card">
+                <div class="welcome-text">
 
-                        <div class="property-type">
-                            {{ property.property_type }}
-                        </div>
+                    <span class="welcome-label">
+                        DAR.NOUS
+                    </span>
 
+                    <h1>
+                        Bonjour,
+                        {{ session.get("username") }}
+                        👋
+                    </h1>
 
-                        <h3>
-                            {{ property.title }}
-                        </h3>
+                    <p>
+                        Gérez votre compte et vos annonces
+                        depuis votre espace personnel.
+                    </p>
 
+                </div>
 
-                        <div class="property-price">
-                            {{ property.price }} DH
-                        </div>
-
-
-                        <div class="property-location">
-
-                            📍
-                            {{ property.city }}
-
-                            {% if property.district %}
-                                — {{ property.district }}
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="property-meta">
-
-                            <span>
-                                📐
-                                {{ property.surface or 0 }} m²
-                            </span>
-
-                            <span>
-                                🛏️
-                                {{ property.bedrooms }}
-                            </span>
-
-                            <span>
-                                🚿
-                                {{ property.bathrooms }}
-                            </span>
-
-                        </div>
-
-
-                        <div style="margin-top:15px">
-
-                            {% if property.status == "active" %}
-
-                                <span class="status-active">
-                                    ● Active
-                                </span>
-
-                            {% else %}
-
-                                <span>
-                                    {{ property.status }}
-                                </span>
-
-                            {% endif %}
-                            <a href="{{ url_for('property_details', property_id=property.id) }}"
-                               class="view-property-button"
-                            >
-                            Voir l'annonce →
-                            </a>
-
-                        </div>
-
-                    </article>
-
-                {% endfor %}
-
-            </div>
-
-
-        {% else %}
-
-
-            <div class="empty-dashboard">
-
-                <h2>
-                    Vous n'avez encore aucune annonce
-                </h2>
-
-                <p>
-                    Ajoutez votre premier logement sur Dar.nous.
-                </p>
 
                 <a
                     href="{{ url_for('add_property') }}"
-                    class="add-property-btn"
+                    class="add-property-button"
                 >
-                    + Ajouter ma première annonce
+                    <span>+</span>
+                    Ajouter une annonce
                 </a>
 
-            </div>
+            </section>
 
 
-        {% endif %}
 
-    </div>
+            <!-- =================================================
+                 ERROR MESSAGE
+            ================================================== -->
 
-</div>
+            {% if message %}
+
+                <div class="dashboard-message">
+                    {{ message }}
+                </div>
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <section class="dashboard-stats">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🏠
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Mes annonces
+                        </span>
+
+                        <strong>
+                            {{ properties|length }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🟢
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Annonces actives
+                        </span>
+
+                        <strong>
+
+                            {{
+                                properties
+                                |selectattr("status", "equalto", "active")
+                                |list
+                                |length
+                            }}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🔴
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Louées
+                        </span>
+
+                        <strong>
+
+                            {{
+                                properties
+                                |selectattr("status", "equalto", "rented")
+                                |list
+                                |length
+                            }}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        💰
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Prix moyen
+                        </span>
+
+                        <strong>
+
+                            {% if properties %}
+
+                                {{
+                                    (
+                                        properties
+                                        |map(attribute="price")
+                                        |map("float")
+                                        |sum
+                                        / properties|length
+                                    )|round(0)
+                                }}
+                                DH
+
+                            {% else %}
+
+                                0 DH
+
+                            {% endif %}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECTION TITLE
+            ================================================== -->
+
+            <section class="dashboard-section-header">
+
+                <div>
+
+                    <span>
+                        VOS LOGEMENTS
+                    </span>
+
+                    <h2>
+                        Mes annonces
+                    </h2>
+
+                </div>
+
+
+                {% if properties %}
+
+                    <a
+                        href="{{ url_for('add_property') }}"
+                        class="small-add-button"
+                    >
+                        + Nouvelle annonce
+                    </a>
+
+                {% endif %}
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PROPERTIES
+            ================================================== -->
+
+            {% if properties %}
+
+
+                <section class="dashboard-properties">
+
+
+                    {% for property in properties %}
+
+                        <article class="dashboard-property-card">
+
+
+                            <!-- IMAGE / PLACEHOLDER -->
+
+                            <div class="property-card-image">
+
+                                <div class="property-image-placeholder">
+                                    🏠
+                                </div>
+
+
+                                {% if property.status == "active" %}
+
+                                    <span class="property-status active">
+                                        Disponible
+                                    </span>
+
+                                {% elif property.status == "rented" %}
+
+                                    <span class="property-status rented">
+                                        Loué
+                                    </span>
+
+                                {% elif property.status == "pending" %}
+
+                                    <span class="property-status pending">
+                                        En attente
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="property-status hidden">
+                                        Masquée
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+
+                            <!-- CONTENT -->
+
+                            <div class="property-card-content">
+
+
+                                <div class="property-card-type">
+                                    {{ property.property_type }}
+                                </div>
+
+
+                                <h3>
+                                    {{ property.title }}
+                                </h3>
+
+
+                                <p class="property-card-location">
+
+                                    📍
+
+                                    {{ property.city }}
+
+                                    {% if property.district %}
+                                        — {{ property.district }}
+                                    {% endif %}
+
+                                </p>
+
+
+                                <div class="property-card-price">
+
+                                    {{ property.price }}
+
+                                    <span>
+                                        DH / mois
+                                    </span>
+
+                                </div>
+
+
+                                <div class="property-card-details">
+
+
+                                    <span>
+                                        📐
+                                        {{ property.surface or 0 }} m²
+                                    </span>
+
+
+                                    <span>
+                                        🛏️
+                                        {{ property.bedrooms }}
+                                        ch.
+                                    </span>
+
+
+                                    <span>
+                                        🚿
+                                        {{ property.bathrooms }}
+                                        SDB
+                                    </span>
+
+
+                                </div>
+
+
+                                <div class="property-card-date">
+
+                                    Publiée le
+
+                                    {{ property.created_at.strftime('%d/%m/%Y') }}
+
+                                </div>
+
+
+                                <div class="property-card-actions">
+
+
+                                    <a
+                                        href="{{ url_for(
+                                            'property_details',
+                                            property_id=property.id
+                                        ) }}"
+                                        class="view-property-button"
+                                    >
+                                        Voir l'annonce
+                                    </a>
+
+
+                                    <button
+                                        type="button"
+                                        class="more-button"
+                                        title="Plus d'options"
+                                    >
+                                        ⋮
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+
+                </section>
+
+
+            {% else %}
+
+
+                <!-- =================================================
+                     EMPTY STATE
+                ================================================== -->
+
+                <section class="dashboard-empty">
+
+                    <div class="empty-icon">
+                        🏠
+                    </div>
+
+                    <h2>
+                        Vous n'avez encore aucune annonce
+                    </h2>
+
+                    <p>
+                        Publiez votre premier logement
+                        et commencez à recevoir des demandes.
+                    </p>
+
+                    <a
+                        href="{{ url_for('add_property') }}"
+                        class="empty-add-button"
+                    >
+                        + Publier ma première annonce
+                    </a>
+
+                </section>
+
+
+            {% endif %}
+
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+            ================================================== -->
+
+            <section class="quick-actions">
+
+                <h2>
+                    Accès rapide
+                </h2>
+
+
+                <div class="quick-actions-grid">
+
+
+                    <a
+                        href="{{ url_for('profile') }}"
+                        class="quick-action-card"
+                    >
+
+                        <div>
+                            👤
+                        </div>
+
+                        <section>
+
+                            <strong>
+                                Mon profil
+                            </strong>
+
+                            <span>
+                                Modifier mes informations
+                            </span>
+
+                        </section>
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('add_property') }}"
+                        class="quick-action-card"
+                    >
+
+                        <div>
+                            ➕
+                        </div>
+
+                        <section>
+
+                            <strong>
+                                Ajouter une annonce
+                            </strong>
+
+                            <span>
+                                Publier un nouveau logement
+                            </span>
+
+                        </section>
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('home') }}"
+                        class="quick-action-card"
+                    >
+
+                        <div>
+                            🔎
+                        </div>
+
+                        <section>
+
+                            <strong>
+                                Explorer
+                            </strong>
+
+                            <span>
+                                Rechercher des logements
+                            </span>
+
+                        </section>
+
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('logout') }}"
+                        class="quick-action-card"
+                    >
+
+                        <div>
+                            🚪
+                        </div>
+
+                        <section>
+
+                            <strong>
+                                Déconnexion
+                            </strong>
+
+                            <span>
+                                Quitter mon compte
+                            </span>
+
+                        </section>
+
+                    </a>
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="dashboard-footer">
+
+        <div class="footer-logo">
+            Dar<span>.nous</span>
+        </div>
+
+        <p>
+            © 2026 Dar.nous — La location immobilière au Maroc
+        </p>
+
+    </footer>
+
 
 </body>
+
 </html>
