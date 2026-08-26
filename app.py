@@ -226,17 +226,342 @@ def init_db():
 
 
 # =========================================================
-# HOME
+# HOME - REAL PROPERTIES
 # =========================================================
 
 @app.route("/")
 def home():
 
-    return render_template(
-        "index.html",
-        username=session.get("username")
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT
+                p.id,
+                p.title,
+                p.description,
+                p.property_type,
+                p.price,
+                p.city,
+                p.district,
+                p.surface,
+                p.bedrooms,
+                p.bathrooms,
+                p.furnished,
+                p.parking,
+                p.elevator,
+                p.air_conditioning,
+                p.latitude,
+                p.longitude,
+                p.status,
+                p.created_at,
+
+                u.username AS owner_username
+
+            FROM properties p
+
+            INNER JOIN users u
+                ON p.owner_id = u.id
+
+            WHERE p.status = 'active'
+
+            ORDER BY p.created_at DESC
+
+            LIMIT 12
+        """)
+
+        properties = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return render_template(
+            "index.html",
+            properties=properties
+        )
+
+    except Exception as e:
+
+        if conn:
+            conn.close()
+
+        return render_template(
+            "index.html",
+            properties=[],
+            message=f"Erreur: {e}"
+        )
+
+# =========================================================
+# SEARCH PROPERTIES
+# =========================================================
+
+@app.route("/search")
+def search():
+
+    location = request.args.get(
+        "location",
+        ""
+    ).strip()
+
+    property_type = request.args.get(
+        "property_type",
+        ""
+    ).strip()
+
+    max_price = request.args.get(
+        "max_price",
+        ""
+    ).strip()
+
+    bedrooms = request.args.get(
+        "bedrooms",
+        ""
+    ).strip()
+
+    furnished = request.args.get(
+        "furnished",
+        ""
+    ).strip()
+
+    parking = request.args.get(
+        "parking",
+        ""
+    ).strip()
+
+    elevator = request.args.get(
+        "elevator",
+        ""
+    ).strip()
+
+    air_conditioning = request.args.get(
+        "air_conditioning",
+        ""
+    ).strip()
+
+
+    conditions = [
+        "p.status = 'active'"
+    ]
+
+    values = []
+
+
+    # -----------------------------------------
+    # LOCATION
+    # -----------------------------------------
+
+    if location:
+
+        conditions.append("""
+            (
+                p.city ILIKE %s
+                OR p.district ILIKE %s
+            )
+        """)
+
+        location_value = "%" + location + "%"
+
+        values.extend([
+            location_value,
+            location_value
+        ])
+
+
+    # -----------------------------------------
+    # TYPE
+    # -----------------------------------------
+
+    if property_type:
+
+        conditions.append(
+            "p.property_type = %s"
+        )
+
+        values.append(
+            property_type
+        )
+
+
+    # -----------------------------------------
+    # MAX PRICE
+    # -----------------------------------------
+
+    if max_price:
+
+        try:
+
+            max_price_value = float(
+                max_price
+            )
+
+            conditions.append(
+                "p.price <= %s"
+            )
+
+            values.append(
+                max_price_value
+            )
+
+        except ValueError:
+
+            pass
+
+
+    # -----------------------------------------
+    # BEDROOMS
+    # -----------------------------------------
+
+    if bedrooms:
+
+        try:
+
+            bedrooms_value = int(
+                bedrooms
+            )
+
+            conditions.append(
+                "p.bedrooms >= %s"
+            )
+
+            values.append(
+                bedrooms_value
+            )
+
+        except ValueError:
+
+            pass
+
+
+    # -----------------------------------------
+    # FURNISHED
+    # -----------------------------------------
+
+    if furnished == "1":
+
+        conditions.append(
+            "p.furnished = TRUE"
+        )
+
+
+    # -----------------------------------------
+    # PARKING
+    # -----------------------------------------
+
+    if parking == "1":
+
+        conditions.append(
+            "p.parking = TRUE"
+        )
+
+
+    # -----------------------------------------
+    # ELEVATOR
+    # -----------------------------------------
+
+    if elevator == "1":
+
+        conditions.append(
+            "p.elevator = TRUE"
+        )
+
+
+    # -----------------------------------------
+    # AIR CONDITIONING
+    # -----------------------------------------
+
+    if air_conditioning == "1":
+
+        conditions.append(
+            "p.air_conditioning = TRUE"
+        )
+
+
+    where_clause = " AND ".join(
+        conditions
     )
 
+
+    conn = None
+
+    try:
+
+        conn = get_db()
+        cur = conn.cursor()
+
+        query = f"""
+            SELECT
+                p.id,
+                p.title,
+                p.description,
+                p.property_type,
+                p.price,
+                p.city,
+                p.district,
+                p.address,
+                p.surface,
+                p.bedrooms,
+                p.bathrooms,
+                p.furnished,
+                p.parking,
+                p.elevator,
+                p.air_conditioning,
+                p.latitude,
+                p.longitude,
+                p.status,
+                p.created_at,
+
+                u.username AS owner_username
+
+            FROM properties p
+
+            INNER JOIN users u
+                ON p.owner_id = u.id
+
+            WHERE {where_clause}
+
+            ORDER BY p.created_at DESC
+        """
+
+        cur.execute(
+            query,
+            values
+        )
+
+        properties = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+
+        return render_template(
+            "search.html",
+            properties=properties,
+
+            location=location,
+            property_type=property_type,
+            max_price=max_price,
+            bedrooms=bedrooms,
+            furnished=furnished,
+            parking=parking,
+            elevator=elevator,
+            air_conditioning=air_conditioning
+        )
+
+
+    except Exception as e:
+
+        if conn:
+            conn.close()
+
+        return render_template(
+            "search.html",
+            properties=[],
+            error=str(e)
+        )
 
 # =========================================================
 # REGISTER
